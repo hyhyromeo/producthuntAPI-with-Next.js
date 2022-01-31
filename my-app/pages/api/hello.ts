@@ -1,12 +1,5 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
-import {
-  ApolloClient,
-  InMemoryCache,
-  ApolloProvider,
-  useQuery,
-  gql,
-} from "@apollo/client";
+import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -24,6 +17,5 @@ export default async function handler(
       ${JSON.parse(req.body).query}
     `,
   });
-  console.log("data", data);
-  res.status(200).json({ data: data.posts });
+  res.status(200).json({ data: data });
 }
