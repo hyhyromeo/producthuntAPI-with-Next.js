@@ -42,13 +42,9 @@ const Home: NextPage = () => {
       method: "POST",
       body: JSON.stringify({
         query: `query {
-          topics(first:30, order:FOLLOWERS_COUNT) {
+          topics(first:1, order:FOLLOWERS_COUNT) {
             edges{
               node {
-               id
-               name
-               image
-               description
                slug
               }
              }
@@ -57,10 +53,12 @@ const Home: NextPage = () => {
       }),
     })
       .then((response) => response.json())
-      .then((top) => setTopic(top));
-    console.log("topic:", topic);
+      .then((top) => setTopic(top.data.edges));
   }, []);
-
+  useEffect(() => {
+    console.log("topic:", topic);
+    console.log("post:", post);
+  }, [topic]);
   // useEffect(() => {
   //   fetch("http://localhost:3000/api/hello", {
   //     method: "POST",

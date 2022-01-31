@@ -24,6 +24,6 @@ export default async function handler(
       ${JSON.parse(req.body).query}
     `,
   });
-  console.log("data", data.posts);
+  console.log("data", data);
   res.status(200).json({ data: data.posts });
 }
