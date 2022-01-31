@@ -15,30 +15,13 @@ export default async function handler(
     uri: "https://api.producthunt.com/v2/api/graphql",
     cache: new InMemoryCache(),
     headers: {
-      Authorization: "Bearer g4oe_3WAqDxJZyoNeFOaxBzcLHR6DnvaakTLOYa3GFg ",
+      Authorization: "Bearer EdfavslzA6eH1bRy7s_u2v-IDT-PApdzyqgLQtzxvCM",
     },
   });
 
   const { data } = await client.query({
     query: gql`
-      query {
-        posts(first: 10) {
-          edges {
-            node {
-              id
-              name
-              slug
-              description
-              commentsCount
-              reviewsCount
-              thumbnail {
-                url
-              }
-              url
-            }
-          }
-        }
-      }
+      ${JSON.parse(req.body).query}
     `,
   });
   console.log("data", data.posts);

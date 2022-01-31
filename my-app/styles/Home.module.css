@@ -17,3 +17,6 @@
   align-items: center;
   flex-grow: 1;
 }
+.dropdown:hover .dropdown-menu {
+  display: block;
+}

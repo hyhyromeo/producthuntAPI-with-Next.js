@@ -2,19 +2,92 @@ import { ApolloClient, gql, InMemoryCache } from "@apollo/client";
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
+import { stringify } from "querystring";
 import { useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
 
 const Home: NextPage = () => {
-  const [data, setData] = useState(Array);
-  const [flag, setFlag] = useState(false);
+  const [post, setPost] = useState(Array);
+  const [topic, setTopic] = useState(Array);
+  const [flag, setFlag] = useState(String);
   //
   useEffect(() => {
-    fetch("http://localhost:3000/api/hello")
+    fetch("http://localhost:3000/api/hello", {
+      method: "POST",
+      body: JSON.stringify({
+        query: `query {
+           posts(first: 1) {
+             edges {
+               node {
+                 id
+                 name
+                 description
+                 commentsCount
+                 thumbnail {
+                   url
+                 }
+                 url
+               }
+             }
+           }
+         }`,
+      }),
+    })
       .then((response) => response.json())
-      .then((data) => setData(data.data.edges))
-      .then(() => setFlag(true));
+      .then((data) => setPost(data.data.edges));
   }, []);
+
+  useEffect(() => {
+    fetch("http://localhost:3000/api/hello", {
+      method: "POST",
+      body: JSON.stringify({
+        query: `query {
+          topics(first:30, order:FOLLOWERS_COUNT) {
+            edges{
+              node {
+               id
+               name
+               image
+               description
+               slug
+              }
+             }
+           }
+         }`,
+      }),
+    })
+      .then((response) => response.json())
+      .then((top) => setTopic(top));
+    console.log("topic:", topic);
+  }, []);
+
+  // useEffect(() => {
+  //   fetch("http://localhost:3000/api/hello", {
+  //     method: "POST",
+  //     body: JSON.stringify({
+  //       query: `query {
+  //          posts(topic: ${flag} ,first: 10) {
+  //            edges {
+  //              node {
+  //                id
+  //                name
+  //                slug
+  //                description
+  //                commentsCount
+  //                reviewsCount
+  //                thumbnail {
+  //                  url
+  //                }
+  //                url
+  //              }
+  //            }
+  //          }
+  //        }`,
+  //     }),
+  //   })
+  //     .then((response) => response.json())
+  //     .then((data) => setPost(data.data.edges));
+  // }, [flag]);
 
   function Redirect(url: string) {
     window.location.href = url;
@@ -27,13 +100,55 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      <div className="p-10  z-40">
+        <div className="dropdown inline-block relative group ">
+          <button className="bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded inline-flex items-center">
+            <span className="mr-1">Dropdown</span>
+            <svg
+              className="fill-current h-4 w-4"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+            >
+              <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />{" "}
+            </svg>
+          </button>
+          <ul className="dropdown-menu z-40 absolute hidden group-hover:block text-gray-700 pt-1">
+            <li className="">
+              <a
+                className="rounded-t bg-gray-200 group-hover:block hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap"
+                href="#"
+              >
+                One
+              </a>
+            </li>
+            <li className="">
+              <a
+                className="bg-gray-200 hover:bg-gray-400 group-hover:block py-2 px-4 block whitespace-no-wrap"
+                href="#"
+              >
+                Two
+              </a>
+            </li>
+            <li className="">
+              <a
+                className="rounded-b bg-gray-200 hover:bg-gray-400 py-2 px-4 block whitespace-no-wrap"
+                href="#"
+              >
+                Three is the magic number
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
       <div>
-        {data.map((value: any, id: number) => {
-          console.log(value);
+        {post.map((value: any, id: number) => {
+          // console.log(value);
           return (
             <div
-              className="py-6 flex flex-col justify-center relative overflow-hidden sm:py-8"
-              // onClick={() => Redirect(value.node.url)}
+              key={id}
+              className="py-6 flex flex-col justify-center relative overflow-hidden sm:py-8 z-10"
+              onClick={() => Redirect(value.node.url)}
             >
               <div className="absolute bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
               <div className="group hover:bg-sky-100 cursor-pointer relative px-6 pt-10 pb-8 bg-white shadow-xl ring-1 ring-gray-900/5 mx-5 sm:rounded-lg ">
@@ -42,14 +157,13 @@ const Home: NextPage = () => {
                   <div>
                     <div className="text-2xl  flex">
                       {value.node.name}
-
                       <svg
                         className="mx-5 hidden group-hover:block"
                         width="13"
                         viewBox="0 0 13 14"
                         xmlns="http://www.w3.org/2000/svg"
                       >
-                        <g stroke="#4B587C" stroke-width="1.5" fill="none">
+                        <g stroke="#4B587C" fill="none">
                           <path d="M9.6 4H4.2a2.4 2.4 0 00-2.4 2.4V10"></path>
                           <path d="M6.6 7l3-3-3-3m5.4 9v3H0"></path>
                         </g>
