@@ -8,7 +8,7 @@ import styles from "../styles/Home.module.css";
 const Home: NextPage = () => {
   const [data, setData] = useState(Array);
   const [flag, setFlag] = useState(false);
-
+  //
   useEffect(() => {
     fetch("http://localhost:3000/api/hello")
       .then((response) => response.json())
