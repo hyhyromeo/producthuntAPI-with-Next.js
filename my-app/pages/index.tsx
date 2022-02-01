@@ -10,6 +10,10 @@ const Home: NextPage = () => {
   const [loading, setLoading] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState(String);
   //
+  interface Top {
+    slug: string;
+    __typename: string;
+  }
   useEffect(() => {
     setLoading(true);
     fetch("http://localhost:3000/api/hello", {
@@ -34,8 +38,10 @@ const Home: NextPage = () => {
       }),
     })
       .then((response) => response.json())
-      .then((data) => setPost(data.data.posts.edges));
-    setLoading(false);
+      .then((data) => {
+        setPost(data.data.posts.edges);
+        setLoading(false);
+      });
   }, []);
 
   useEffect(() => {
@@ -55,8 +61,10 @@ const Home: NextPage = () => {
       }),
     })
       .then((response) => response.json())
-      .then((top) => setTopic(top.data.topics.edges));
-    setLoading(false);
+      .then((top) => {
+        setTopic(top.data.topics.edges);
+        setLoading(false);
+      });
   }, []);
 
   useEffect(() => {
@@ -66,7 +74,7 @@ const Home: NextPage = () => {
         method: "POST",
         body: JSON.stringify({
           query: `query {
-           posts(topic: ${selectedTopic} ,first: 30) {
+           posts(topic: "${selectedTopic}" ,first: 30) {
              edges {
                node {
                  id
@@ -117,9 +125,9 @@ const Home: NextPage = () => {
               </svg>
             </button>
             <ul className="dropdown-menu z-40 absolute hidden group-hover:block text-gray-700 pt-1">
-              {topic.map((tops: any) => {
+              {topic.map((tops: any, id: number) => {
                 return (
-                  <li className="">
+                  <li key={id} className="">
                     <a
                       className="bg-gray-300 opacity-90 hover:bg-gray-400 group-hover:block py-2 px-4 block whitespace-no-wrap"
                       onClick={() => setSelectedTopic(tops.node.slug)}
